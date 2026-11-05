@@ -13,6 +13,22 @@ local function scoreboard_detection_hacks()
 end
 hud.add(scoreboard_detection_hacks, "scores")
 
+local getFlagPatchName = function(flagtype)
+	local patchname = "MISSING"
+	
+	if (flagtype == "blue") then
+		patchname = mapheaderinfo[gamemap].blueflag_icon or "BFLAGICO"
+	elseif (flagtype == "red") then
+		patchname = mapheaderinfo[gamemap].redflag_icon or "RFLAGICO"
+	end
+	
+	return patchname
+end
+
+local getFlagPatch = function(v, flagtype)
+	return v.cachePatch(getFlagPatchName(flagtype))
+end
+
 local update_pos = function(player)
 	if (not player) or B.Console.FindVarString("battleconfig_hud", {"New", "Minimal"}) then
 		SEP = 36
@@ -242,12 +258,12 @@ local function cctf_hud(v, p, cam)
 	local patch_flags = V_HUDTRANS|V_PERPLAYER|V_SNAPTOTOP
 
 	-- Blue flag
-	local bflag = v.cachePatch("BFLAGICO")
+	local bflag = getFlagPatch(v, "blue")
 	local BFLG_POS_X = (BASEVIDWIDTH/2) - SEP - (bflag.width/4)
 	local BFLG_POS_Y = YPOS + 4
 
 	-- Red flag
-	local rflag = v.cachePatch("RFLAGICO")
+	local rflag = getFlagPatch(v, "red")
 	local RFLG_POS_X = (BASEVIDWIDTH/2) + SEP - (bflag.width/4)
 	local RFLG_POS_Y = YPOS + 4
 
@@ -321,8 +337,8 @@ F.RankingHUD = function(v)
 -- TODO: RE-code all of the ranking that shows up when you press tab
 
 	-- Draws flag icon next to flag holder when showing rankings
-	local bflagico = v.cachePatch("BFLAGICO")
-	local rflagico = v.cachePatch("RFLAGICO")   
+	local bflagico = getFlagPatch(v, "blue")
+	local rflagico = getFlagPatch(v, "red")
 
 	local redplayers = 0
 	local blueplayers = 0
